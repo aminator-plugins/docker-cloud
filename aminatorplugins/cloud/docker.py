@@ -104,8 +104,15 @@ class DockerCloudPlugin(BaseCloudPlugin):
 
     @retry(tries=3,delay=2,backoff=2,logger=log)
     def delete_volume(self):
+        context = self._config.context
         # docker rm $container
-        result = monitor_command(["docker", "rm", self._config.context.cloud["container"]])
+        result = monitor_command(["docker", "rm", context.cloud["container"]])
+        if not result.success:
+            log.error('failure:{0.command} :{0.std_err}'.format(result.result))
+            return False
+
+        name = "{}/{}".format(self.registry(), context.ami.name)
+        result = monitor_command(["docker", "rmi", name])
         if not result.success:
             log.error('failure:{0.command} :{0.std_err}'.format(result.result))
             return False
@@ -113,7 +120,6 @@ class DockerCloudPlugin(BaseCloudPlugin):
 
     def snapshot_volume(self, description=None):
         context = self._config.context
-        # docker commit $container dockerregistry.test.netflix.net:7001/$name
         name = "{}/{}".format(self.registry(), context.ami.name)
         result = monitor_command(["docker", "commit", self._config.context.cloud["container"], name])
         if not result.success:
@@ -132,7 +138,6 @@ class DockerCloudPlugin(BaseCloudPlugin):
     @retry(tries=3,delay=2,backoff=2,logger=log)
     def register_image(self, *args, **kwargs):
         context = self._config.context
-        # docker push dockerregistry.test.netflix.net:7001/$name
         name = "{}/{}".format(self.registry(), context.ami.name)
         result = monitor_command(["docker", "push", name])
         if not result.success:
