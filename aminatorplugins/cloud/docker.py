@@ -143,6 +143,7 @@ class DockerCloudPlugin(BaseCloudPlugin):
         if not result.success:
             log.error('failure:{0.command} :{0.std_err}'.format(result.result))
             return False
+        log.info('Docker Image registered: {0}'.format(name))
         return True
 
     def __enter__(self):

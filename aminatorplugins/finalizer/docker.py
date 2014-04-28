@@ -42,7 +42,7 @@ class DockerFinalizerPlugin(BaseFinalizerPlugin):
         context = self._config.context
         docker = self._parser.add_argument_group(title='Docker Naming',
                                                   description='Naming options for the resultant Docker image')
-        docker.add_argument('-I', '--image-name', dest='name', action=conf_action(context.ami),
+        docker.add_argument('-n', '--image-name', dest='name', action=conf_action(context.ami),
                              help='docker image name')
         docker.add_argument('-s', '--suffix', dest='suffix', action=conf_action(context.ami),
                              help='suffix of docker image name, (default yyyymmddHHMM)')
@@ -67,6 +67,7 @@ class DockerFinalizerPlugin(BaseFinalizerPlugin):
         name = context.ami.get('name', None)
         if not name:
             name = config.name_format.format(**metadata)
+        name = name.lower()
 
         context.ami.name = sanitize_metadata('{0}'.format(name))
 
