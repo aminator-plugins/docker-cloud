@@ -91,7 +91,7 @@ class DockerFinalizerPlugin(BaseFinalizerPlugin):
         if context.ami.get("suffix",None):
             environ["AMINATOR_DOCKER_SUFFIX"] = context.ami.suffix
         if context.ami.get("name",None):
-            environ["AMINATOR_DOCKER_IMAGE_NAME"] = context.ami.suffix
+            environ["AMINATOR_DOCKER_IMAGE_NAME"] = context.ami.name
         return self
 
     def __exit__(self, exc_type, exc_value, trace):
